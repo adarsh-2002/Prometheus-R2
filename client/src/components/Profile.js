@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../config';
 
 const Profile = ({ user, onLogout }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -26,7 +27,7 @@ const Profile = ({ user, onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/auth/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

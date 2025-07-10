@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthForm from './components/AuthForm';
 import Profile from './components/Profile';
+import API_BASE_URL from './config';
 import './App.css';
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await fetch('/api/auth/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

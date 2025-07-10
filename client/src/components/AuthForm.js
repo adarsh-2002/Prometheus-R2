@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../config';
 
 const AuthForm = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -32,7 +33,7 @@ const AuthForm = ({ onLogin }) => {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const response = await fetch(endpoint, {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
