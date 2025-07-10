@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../utils/api';
+import API_BASE_URL from '../config';
 
 const AuthForm = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,17 +33,28 @@ const AuthForm = ({ onLogin }) => {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const data = await api.post(endpoint, requestData);
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+      const data = await response.json();
 
-      setSuccess(data.message);
-      if (isLogin) {
-        onLogin(data.user, data.token);
+      if (response.ok) {
+        setSuccess(data.message);
+        if (isLogin) {
+          onLogin(data.user, data.token);
+        } else {
+          setIsLogin(true);
+          setFormData({ name: '', email: '', password: '', phone: '', address: '' });
+        }
       } else {
-        setIsLogin(true);
-        setFormData({ name: '', email: '', password: '', phone: '', address: '' });
+        setError(data.message || 'An error occurred');
       }
     } catch (error) {
-      setError(error.message || 'An error occurred');
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }

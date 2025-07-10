@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthForm from './components/AuthForm';
 import Profile from './components/Profile';
-import api from './utils/api';
+import API_BASE_URL from './config';
 import './App.css';
 
 function App() {
@@ -20,9 +20,19 @@ function App() {
 
   const fetchUserProfile = async (token) => {
     try {
-      const data = await api.get('/api/auth/profile', token);
-      setUser(data.user);
-      setIsAuthenticated(true);
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem('token');
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
       localStorage.removeItem('token');

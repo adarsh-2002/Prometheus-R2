@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../utils/api';
+import API_BASE_URL from '../config';
 
 const Profile = ({ user, onLogout }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -27,13 +27,25 @@ const Profile = ({ user, onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const data = await api.put('/api/auth/profile', formData, token);
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
 
-      setSuccess(data.message);
-      setIsEditing(false);
-      Object.assign(user, data.user);
+      if (response.ok) {
+        setSuccess(data.message);
+        setIsEditing(false);
+        Object.assign(user, data.user);
+      } else {
+        setError(data.message || 'Failed to update profile');
+      }
     } catch (error) {
-      setError(error.message || 'Failed to update profile');
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
