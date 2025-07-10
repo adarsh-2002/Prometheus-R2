@@ -37,10 +37,25 @@ const validateLogin = [
   body('password').notEmpty().withMessage('Password is required')
 ];
 
+router.get('/test', (req, res) => {
+  res.json({ 
+    message: 'Auth API is working',
+    timestamp: new Date(),
+    env: {
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasMongoUri: !!process.env.MONGODB_URI,
+      nodeEnv: process.env.NODE_ENV
+    }
+  });
+});
+
 router.post('/signup', validateSignup, async (req, res) => {
   try {
+    console.log('Signup request received:', { body: req.body, headers: req.headers });
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({ 
         message: 'Validation failed', 
         errors: errors.array() 
@@ -78,14 +93,17 @@ router.post('/signup', validateSignup, async (req, res) => {
 
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ message: 'Server error during signup' });
+    res.status(500).json({ message: 'Server error during signup', error: error.message });
   }
 });
 
 router.post('/login', validateLogin, async (req, res) => {
   try {
+    console.log('Login request received:', { body: req.body, headers: req.headers });
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({ 
         message: 'Validation failed', 
         errors: errors.array() 
@@ -118,7 +136,7 @@ router.post('/login', validateLogin, async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ message: 'Server error during login', error: error.message });
   }
 });
 
